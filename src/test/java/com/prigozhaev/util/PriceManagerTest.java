@@ -164,6 +164,32 @@ public class PriceManagerTest {
     }
 
     @Test
+    public void mergeDifferentPricesTest() throws ParseException {
+        existingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("01.10.2019 00:00:00"), dateFormat.parse("10.10.2019 23:59:59"), 100L));
+        incomingPrices.add(new Price("price_2", 1, 2, dateFormat.parse("20.10.2019 00:00:00"), dateFormat.parse("31.10.2019 23:59:59"), 200L));
+
+        result.add(new Price("price_1", 1, 1, dateFormat.parse("01.10.2019 00:00:00"), dateFormat.parse("10.10.2019 23:59:59"), 100L));
+        result.add(new Price("price_2", 1, 2, dateFormat.parse("20.10.2019 00:00:00"), dateFormat.parse("31.10.2019 23:59:59"), 200L));
+
+        List<Price> mergedPrices = new ArrayList<>(PriceManager.merge(existingPrices, incomingPrices));
+
+        assertTrue(result.containsAll(mergedPrices) && result.size() == mergedPrices.size());
+    }
+
+    @Test
+    public void mergePricesWithNullValueTest() throws ParseException {
+        existingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("01.10.2019 00:00:00"), dateFormat.parse("20.10.2019 23:59:59"), null));
+        incomingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("10.10.2019 00:00:00"), dateFormat.parse("31.10.2019 23:59:59"), 200L));
+
+        result.add(new Price("price_1", 1, 1, dateFormat.parse("01.10.2019 00:00:00"), dateFormat.parse("10.10.2019 00:00:00"), null));
+        result.add(new Price("price_1", 1, 1, dateFormat.parse("10.10.2019 00:00:00"), dateFormat.parse("31.10.2019 23:59:59"), 200L));
+
+        List<Price> mergedPrices = new ArrayList<>(PriceManager.merge(existingPrices, incomingPrices));
+
+        assertTrue(result.containsAll(mergedPrices) && result.size() == mergedPrices.size());
+    }
+
+    @Test
     public void mergePricesFirstExample() throws ParseException {
         existingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("01.10.2019 00:00:00"), dateFormat.parse("31.10.2019 23:59:59"), 50L));
         incomingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("10.10.2019 00:00:00"), dateFormat.parse("20.10.2019 23:59:59"), 60L));
