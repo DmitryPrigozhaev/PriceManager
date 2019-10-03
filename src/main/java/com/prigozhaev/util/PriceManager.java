@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 public class PriceManager {
 
+    /**
+     * The PriceManager class cannot be instantiated.
+     */
     private PriceManager() {
         throw new IllegalStateException("Utility class");
     }
@@ -55,71 +58,71 @@ public class PriceManager {
         List<Price> result = new ArrayList<>(existingPrices);
 
         for (Price incomingPrice : incomingPrices) {
-            List<Price> availablePriceGroup = result.stream()
-                    .filter(availablePrice -> isContain(availablePrice, incomingPrice))
+            List<Price> existingPricesGroup = result.stream()
+                    .filter(existingPrice -> isContain(existingPrice, incomingPrice))
                     .collect(Collectors.toList());
-            result.removeAll(availablePriceGroup);
-            result.addAll(getPriceListForGroup(availablePriceGroup, incomingPrice));
+            result.removeAll(existingPricesGroup);
+            result.addAll(getPriceListForGroup(existingPricesGroup, incomingPrice));
         }
 
         return result;
     }
 
-    private static Collection<Price> getPriceListForGroup(List<Price> availablePricesGroup, Price incomingPrices) {
+    private static Collection<Price> getPriceListForGroup(List<Price> existingPricesGroup, Price incomingPrice) {
 
-        List<Price> groupOfPriceList = new ArrayList<>();
+        List<Price> groupOfPricesList = new ArrayList<>();
 
-        if (availablePricesGroup.isEmpty()) {
-            groupOfPriceList.add(incomingPrices);
-            return groupOfPriceList;
+        if (existingPricesGroup.isEmpty()) {
+            groupOfPricesList.add(incomingPrice);
+            return groupOfPricesList;
         }
 
-        availablePricesGroup.stream()
-                .filter(price -> incomingPrices.getPriceActionPeriod().isInsideIn(price.getPriceActionPeriod()))
+        existingPricesGroup.stream()
+                .filter(existingPrice -> incomingPrice.getPriceActionPeriod().isInsideIn(existingPrice.getPriceActionPeriod()))
                 .findFirst()
-                .ifPresent(price -> {
-                    if (incomingPrices.getValue().equals(price.getValue())) {
-                        incomingPrices.setBegin(price.getBegin());
-                        incomingPrices.setEnd(price.getEnd());
+                .ifPresent(existingPrice -> {
+                    if (incomingPrice.getValue().equals(existingPrice.getValue())) {
+                        incomingPrice.setBegin(existingPrice.getBegin());
+                        incomingPrice.setEnd(existingPrice.getEnd());
                     } else {
-                        groupOfPriceList.add(new Price(price, price.getBegin(), incomingPrices.getBegin()));
-                        groupOfPriceList.add(new Price(price, incomingPrices.getEnd(), price.getEnd()));
+                        groupOfPricesList.add(new Price(existingPrice, existingPrice.getBegin(), incomingPrice.getBegin()));
+                        groupOfPricesList.add(new Price(existingPrice, incomingPrice.getEnd(), existingPrice.getEnd()));
                     }
                 });
 
-        availablePricesGroup.stream()
-                .filter(price -> incomingPrices.getPriceActionPeriod().haveIntersectionOnTheRightWith(price.getPriceActionPeriod()))
+        existingPricesGroup.stream()
+                .filter(existingPrice -> incomingPrice.getPriceActionPeriod().haveIntersectionOnTheRightWith(existingPrice.getPriceActionPeriod()))
                 .findFirst()
-                .ifPresent(price -> {
-                    if (incomingPrices.getValue().equals(price.getValue()))
-                        incomingPrices.setEnd(price.getEnd());
+                .ifPresent(existingPrice -> {
+                    if (incomingPrice.getValue().equals(existingPrice.getValue()))
+                        incomingPrice.setEnd(existingPrice.getEnd());
                     else
-                        groupOfPriceList.add(new Price(price, incomingPrices.getEnd(), price.getEnd()));
+                        groupOfPricesList.add(new Price(existingPrice, incomingPrice.getEnd(), existingPrice.getEnd()));
                 });
 
-        availablePricesGroup.stream()
-                .filter(price -> incomingPrices.getPriceActionPeriod().haveIntersectionOnTheLeftWith(price.getPriceActionPeriod()))
+        existingPricesGroup.stream()
+                .filter(existingPrice -> incomingPrice.getPriceActionPeriod().haveIntersectionOnTheLeftWith(existingPrice.getPriceActionPeriod()))
                 .findFirst()
-                .ifPresent(price -> {
-                    if (incomingPrices.getValue().equals(price.getValue()))
-                        incomingPrices.setBegin(price.getBegin());
+                .ifPresent(existingPrice -> {
+                    if (incomingPrice.getValue().equals(existingPrice.getValue()))
+                        incomingPrice.setBegin(existingPrice.getBegin());
                     else
-                        groupOfPriceList.add(new Price(price, price.getBegin(), incomingPrices.getBegin()));
+                        groupOfPricesList.add(new Price(existingPrice, existingPrice.getBegin(), incomingPrice.getBegin()));
                 });
 
-        availablePricesGroup.stream()
-                .filter(price -> incomingPrices.getPriceActionPeriod().noIntersection(price.getPriceActionPeriod()))
-                .forEachOrdered(groupOfPriceList::add);
+        existingPricesGroup.stream()
+                .filter(existingPrice -> incomingPrice.getPriceActionPeriod().doesNotIntersectionWith(existingPrice.getPriceActionPeriod()))
+                .forEachOrdered(groupOfPricesList::add);
 
-        groupOfPriceList.add(incomingPrices);
+        groupOfPricesList.add(incomingPrice);
 
-        return groupOfPriceList;
+        return groupOfPricesList;
     }
 
-    private static boolean isContain(Price availablePrice, Price incomingPrice) {
-        return availablePrice.getProductCode().equals(incomingPrice.getProductCode()) &&
-                availablePrice.getNumber() == incomingPrice.getNumber() &&
-                availablePrice.getDepart() == incomingPrice.getDepart();
+    private static boolean isContain(Price existingPrice, Price incomingPrice) {
+        return existingPrice.getProductCode().equals(incomingPrice.getProductCode()) &&
+                existingPrice.getNumber() == incomingPrice.getNumber() &&
+                existingPrice.getDepart() == incomingPrice.getDepart();
     }
 
 }

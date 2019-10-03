@@ -85,7 +85,7 @@ public class Price implements Serializable {
 
     /**
      * The constructor is used to create a new price when combining prices,
-     * when some prices may change the price validity period.
+     * when some prices may change the price action period.
      *
      * @param price the existing price
      * @param begin the new start date for the price action period
@@ -103,7 +103,7 @@ public class Price implements Serializable {
     }
 
     /**
-     * Price action period.
+     * The {@code PriceActionPeriod} class represents the price action period.
      * By design, it should always be equal to the time range between {@code this.begin} and {@code this.end}.
      */
     public class PriceActionPeriod {
@@ -205,7 +205,7 @@ public class Price implements Serializable {
          * @return {@code true} if the checked period (this) is include the
          * another period (param), and {@code false} otherwise
          */
-        public boolean noIntersection(PriceActionPeriod priceActionPeriod) {
+        public boolean doesNotIntersectionWith(PriceActionPeriod priceActionPeriod) {
             return (this.begin.after(priceActionPeriod.end) || this.begin.equals(priceActionPeriod.end)) ||
                     (this.end.before(priceActionPeriod.begin) || this.end.equals(priceActionPeriod.begin));
         }

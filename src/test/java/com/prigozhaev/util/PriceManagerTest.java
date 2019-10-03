@@ -219,7 +219,7 @@ public class PriceManagerTest {
     }
 
     @Test
-    public void mergePricesThirdExample() throws Exception {
+    public void mergePricesThirdExample() throws ParseException {
         existingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("01.10.2019 00:00:00"), dateFormat.parse("10.10.2019 00:00:00"), 80L));
         existingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("10.10.2019 00:00:00"), dateFormat.parse("20.10.2019 00:00:00"), 87L));
         existingPrices.add(new Price("price_1", 1, 1, dateFormat.parse("20.10.2019 00:00:00"), dateFormat.parse("31.10.2019 23:59:59"), 90L));
